@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>静かなカフェ</title>
+<style>
+  body {
+    font-family: sans-serif;
+    background: #f5f5f0;
+    color: #333;
+    text-align: center;
+    padding: 40px;
+  }
+  .box {
+    max-width: 500px;
+    margin: auto;
+  }
+  button {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px;
+    border: none;
+    background: #ddd;
+    cursor: pointer;
+  }
+</style>
+</head>
+
+<body>
+<div class="box">
+  <h1>静かなカフェ</h1>
+
+  <p id="status"></p>
+  <p id="event"></p>
+
+  <div id="choices"></div>
+</div>
+
+<script>
+let state = {
+  money: 50,
+  calm: 50,
+  satisfaction: 50,
+  turn: 1
+};
+
+function updateUI() {
+  document.getElementById("status").innerText =
+    `売上: ${state.money} / 静けさ: ${state.calm} / 満足度: ${state.satisfaction} / ${state.turn}日目`;
+
+  document.getElementById("event").innerText = randomEvent();
+
+  let choices = [
+    { text: "席を増やす", effect: () => { state.money += 10; state.calm -= 10; state.satisfaction -= 5; } },
+    { text: "静かな音楽を流す", effect: () => { state.money += 5; state.calm -= 5; state.satisfaction += 10; } },
+    { text: "1人客限定にする", effect: () => { state.money -= 5; state.calm += 10; state.satisfaction += 5; } }
+  ];
+
+  let html = "";
+  choices.forEach((c, i) => {
+    html += `<button onclick="choose(${i})">${c.text}</button>`;
+  });
+
+  document.getElementById("choices").innerHTML = html;
+}
+
+function choose(i) {
+  let actions = [
+    () => { state.money += 10; state.calm -= 10; state.satisfaction -= 5; },
+    () => { state.money += 5; state.calm -= 5; state.satisfaction += 10; },
+    () => { state.money -= 5; state.calm += 10; state.satisfaction += 5; }
+  ];
+
+  actions[i]();
+
+  state.turn++;
+
+  if (state.calm <= 0) {
+    alert("カフェは騒がしくなりすぎました…");
+    location.reload();
+  }
+
+  if (state.money <= 0) {
+    alert("経営が破綻しました…");
+    location.reload();
+  }
+
+  updateUI();
+}
+
+function randomEvent() {
+  let events = [
+    "常連が静けさを気に入っている",
+    "少し騒がしい客が来た",
+    "レビューサイトで話題に",
+    "静かな雨の日"
+  ];
+  return events[Math.floor(Math.random() * events.length)];
+}
+
+updateUI();
+</script>
+</body>
+</html>
+
